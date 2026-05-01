@@ -1,0 +1,35 @@
+---
+import { Image } from 'astro:assets';
+import robotMascot from '../assets/images/hero-robot.png';
+---
+<section class="hero">
+  <div class="hero-ghost">POLA</span>ROID</div>
+  <div class="container">
+    <div class="hero-flex">
+      <div class="hero-content">
+        <div class="hero-text">
+          <div class="hero-badge reveal">Creative Agency — Tech Forward</div>
+          <h1 class="reveal">
+            We Make Brands<br><span>Impossible</span> To Ignore.
+          </h1>
+          <p class="hero-sub reveal">Professional, creative, and tech-forward storytelling that makes your brand pop.</p>
+          <div class="hero-ctas reveal">
+            <a href="#work" class="btn btn-filled">Explore Work</a>
+            <a href="#contact" class="btn btn-outline">Start a Project</a>
+          </div>
+        </div>
+      </div>
+      <div class="hero-mascot-container reveal">
+        <Image
+          src={robotMascot}
+          alt="Mascot"
+          class="hero-mascot"
+          loading="eager"
+          decoding="async"
+          format="webp"
+        />
+      </div>
+    </div>
+  </div>
+  <div class="hero-scroll">Scroll</div>
+</section>

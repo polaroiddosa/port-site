@@ -1,0 +1,30 @@
+---
+import { Image } from 'astro:assets';
+const logos = [
+  { src: '/images/clients/logo-kudumbashree.png', alt: 'Kudumbashree', class: 'large-logo' },
+  { src: '/images/clients/Artboard 1blue.png', alt: 'Client' },
+  { src: '/images/clients/Group-2.png', alt: 'Client' },
+  { src: '/images/clients/Livart beauty academy.png', alt: 'Livart' },
+  { src: '/images/clients/edex dark.png', alt: 'Edex' },
+  { src: '/images/clients/final (1).png', alt: 'Client' },
+  { src: '/images/clients/logo.png', alt: 'Client', class: 'large-logo' },
+  { src: '/images/clients/logo (1).png', alt: 'Client' },
+];
+---
+<section id="clients">
+  <div class="container">
+    <div class="clients-wrap reveal">
+      <div class="clients-intro">
+        <div class="clients-label">Clients</div>
+        <p>Brands that trusted us to lead their visual narrative.</p>
+      </div>
+      <div class="clients-grid">
+        {logos.map((logo) => (
+          <div class="client-tile">
+            <img data-src={logo.src} alt={logo.alt} class={logo.class || ""} loading="lazy" decoding="async" width="160" height="80" />
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
