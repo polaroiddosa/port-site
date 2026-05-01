@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polaroid Dosa — Admin Control Room</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #F39C12;
+            --bg: #080808;
+            --bg-alt: #111111;
+            --text: #F5F5F5;
+            --muted: #888888;
+            --border: rgba(255, 255, 255, 0.05);
+            --card-bg: rgba(255, 255, 255, 0.02);
+            --heading-font: 'Bricolage Grotesque', sans-serif;
+            --body-font: 'Bricolage Grotesque', sans-serif;
+            --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        [data-theme="light"] {
+            --bg: #F9F9F9;
+            --bg-alt: #F0F0F0;
+            --text: #1A1A1A;
+            --muted: #666666;
+            --border: rgba(0, 0, 0, 0.1);
+            --card-bg: #FFFFFF;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--body-font);
+            line-height: 1.6;
+            padding: 40px 20px;
+            transition: background 0.4s var(--ease);
+        }
+
+        .admin-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 60px;
+        }
+
+        .logo {
+            display: inline-block;
+            font-family: var(--heading-font);
+            font-size: 20px; font-weight: 800;
+            letter-spacing: -1px;
+            text-transform: none;
+        }
+        .logo img { height: 28px; width: auto; }
+        .logo span { color: var(--orange); }
+
+        .header-actions { display: flex; gap: 20px; align-items: center; }
+
+        .btn-back {
+            font-size: 13px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--muted); text-decoration: none;
+            transition: 0.3s;
+        }
+        .btn-back:hover { color: var(--text); }
+
+        h1 {
+            font-family: var(--heading-font);
+            font-size: 48px; letter-spacing: -2px;
+            text-transform: uppercase; margin-bottom: 40px;
+        }
+        h1 span { color: var(--orange); }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 40px;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid { grid-template-columns: 1fr; }
+        }
+
+        .editor-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 40px;
+            border-radius: 4px;
+            position: sticky; top: 40px;
+            height: fit-content;
+        }
+
+        .tabs {
+            display: flex; gap: 10px; margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 5px; border-radius: 100px;
+        }
+        .tab-btn {
+            flex: 1; padding: 10px; border: none; background: transparent;
+            color: var(--muted); font-weight: 600; font-size: 12px;
+            text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
+            border-radius: 100px; transition: 0.3s;
+        }
+        .tab-btn.active { background: var(--orange); color: #000; }
+
+        .form-group { margin-bottom: 25px; }
+        label {
+            display: block; font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 2px;
+            color: var(--orange); margin-bottom: 10px;
+        }
+        input, select {
+            width: 100%; padding: 15px; background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border); color: var(--text);
+            font-family: inherit; font-size: 14px; outline: none;
+            transition: border-color 0.3s;
+        }
+        input:focus { border-color: var(--orange); }
+
+        .btn-submit {
+            width: 100%; padding: 18px; background: var(--orange);
+            color: #000; border: none; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 2px;
+            cursor: pointer; transition: 0.4s var(--ease);
+        }
+        .btn-submit:hover { transform: translateY(-5px); background: #fff; }
+
+        .list-panel {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 250px);
+        }
+
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+        .list-header h2 {
+            font-family: var(--heading-font); font-size: 24px;
+            text-transform: uppercase; white-space: nowrap;
+        }
+        .list-header h2 span { color: var(--orange); font-size: 14px; margin-left: 10px; opacity: 0.5; }
+
+        .list-filters { display: flex; gap: 8px; }
+        .filter-pill {
+            padding: 6px 14px; font-size: 10px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px;
+            border: 1px solid var(--border); border-radius: 100px;
+            cursor: pointer; transition: 0.3s; color: var(--muted);
+        }
+        .filter-pill:hover { border-color: var(--orange); color: var(--text); }
+        .filter-pill.active { background: var(--orange); border-color: var(--orange); color: #000; }
+
+        .works-list-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 15px;
+            margin-right: -15px;
+        }
+
+        /* Premium Scrollbar */
+        .works-list-container::-webkit-scrollbar { width: 3px; }
+        .works-list-container::-webkit-scrollbar-track { background: transparent; }
+        .works-list-container::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        .works-list-container::-webkit-scrollbar-thumb:hover { background: var(--orange); }
+
+        .works-list { display: flex; flex-direction: column; gap: 12px; padding-bottom: 40px; }
+
+        .work-card {
+            background: var(--card-bg); border: 1px solid var(--border);
+            padding: 20px; display: flex; align-items: center; gap: 20px;
+            transition: transform 0.4s var(--ease);
+        }
+        .work-card:hover { transform: translateX(10px); border-color: var(--orange); }
+
+        .preview-box {
+            width: 80px; height: 80px; background: #000;
+            overflow: hidden; flex-shrink: 0; display: flex;
+            align-items: center; justify-content: center;
+        }
+        .preview-box img { width: 100%; height: 100%; object-fit: cover; }
+        .preview-box svg { width: 30px; fill: var(--orange); }
+
+        .card-info { flex: 1; }
+        .card-info h3 { font-size: 16px; margin-bottom: 5px; }
+        .card-info p { font-size: 12px; color: var(--muted); }
+
+        .card-actions { display: flex; gap: 10px; }
+        .action-btn {
+            width: 36px; height: 36px; display: flex;
+            align-items: center; justify-content: center;
+            border: 1px solid var(--border); background: transparent;
+            cursor: pointer; transition: 0.3s;
+        }
+        .action-btn svg { width: 16px; fill: var(--muted); }
+        .action-btn:hover { border-color: var(--orange); }
+        .action-btn:hover svg { fill: var(--orange); }
+        .action-btn.delete:hover { border-color: #ff4444; }
+        .action-btn.delete:hover svg { fill: #ff4444; }
+
+        #videoFields { display: none; }
+        #videoFields.active { display: block; }
+        #imageFields { display: none; }
+        #imageFields.active { display: block; }
+
+        .theme-toggle {
+            width: 40px; height: 40px; border-radius: 50%;
+            border: 1px solid var(--border); background: var(--card-bg);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+        .theme-toggle svg { width: 18px; fill: var(--text); position: absolute; transition: 0.5s var(--ease); }
+        .theme-toggle .moon { opacity: 0; transform: translateY(20px); }
+        [data-theme="light"] .theme-toggle .moon { opacity: 1; transform: translateY(0); }
+        [data-theme="light"] .theme-toggle .sun { opacity: 0; transform: translateY(-20px); }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            z-index: 1000; display: none; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--bg); border: 1px solid var(--border);
+            padding: 40px; width: 100%; max-width: 500px;
+        }
+    </style>
+    <script>
+        // AUTH CHECK - MUST BE FIRST
+        if (sessionStorage.getItem('pd_admin_auth') !== 'true') {
+            window.location.href = 'login.html';
+        }
+
+        function logout() {
+            sessionStorage.removeItem('pd_admin_auth');
+            window.location.href = 'login.html';
+        }
+    </script>
+</head>
+<body>
+
+    <div class="admin-container">
+        <header>
+            <a href="index.html" class="logo">
+                Polaroid<span>.</span>Dosa
+            </a>
+            <div class="header-actions">
+                <a href="index.html" class="btn-back">← Back to Portfolio</a>
+                <button onclick="logout()" class="btn-back" style="border:none; background:none; cursor:pointer;">Logout</button>
+                <button id="themeToggle" class="theme-toggle">
+                    <svg class="sun" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-12.37a.996.996 0 00-1.41-1.41l-1.06 1.06a.996.996 0 000 1.41c.39.39 1.03.39 1.41 0l1.06-1.06zm-12.37 12.37a.996.996 0 00-1.41-1.41l-1.06 1.06a.996.996 0 000 1.41c.39.39 1.03.39 1.41 0l1.06-1.06z"/></svg>
+                    <svg class="moon" viewBox="0 0 24 24"><path d="M12.12 22a9.66 9.66 0 01-9.66-9.67 9.63 9.63 0 016.42-9.1 1.02 1.02 0 011.16.45c.18.3.16.67-.06.95a6.99 6.99 0 000 8.6c.22.28.24.64.06.95a1.02 1.02 0 01-1.16.45 9.63 9.63 0 01-6.42-9.1c0-1.31.26-2.56.73-3.71A9.7 9.7 0 0112.12 2c5.34 0 9.67 4.33 9.67 9.67S17.46 21.33 12.12 21.33c-.45 0-.89-.04-1.33-.12.44.08.88.12 1.33.12z"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <h1>Control <span>Room.</span></h1>
+
+        <div class="main-grid">
+            <!-- Form Section -->
+            <div class="editor-panel">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('image')">Poster</button>
+                    <button class="tab-btn" onclick="switchTab('video')">Video</button>
+                </div>
+
+                <form id="workForm">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="title" placeholder="Project Name" required>
+                    </div>
+
+                    <div id="imageFields" class="active">
+                        <div class="form-group">
+                            <label>Image Link</label>
+                            <input type="url" id="imagePath" placeholder="https://...">
+                        </div>
+                    </div>
+
+                    <div id="videoFields">
+                        <div class="form-group">
+                            <label>Platform</label>
+                            <select id="videoType">
+                                <option value="vimeo">Vimeo</option>
+                                <option value="youtube">YouTube</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Video ID</label>
+                            <input type="text" id="videoId" placeholder="ID only">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="submitBtn">Add Project</button>
+                </form>
+            </div>
+
+            <!-- List Section -->
+            <div class="list-panel">
+                <div class="list-header">
+                    <h2>Library<span>(Active)</span></h2>
+                    <div class="list-filters">
+                        <button class="filter-pill active" onclick="setListFilter('all', this)">All</button>
+                        <button class="filter-pill" onclick="setListFilter('image', this)">Posters</button>
+                        <button class="filter-pill" onclick="setListFilter('video', this)">Videos</button>
+                    </div>
+                </div>
+                <div class="works-list-container">
+                    <div class="works-list" id="worksList">
+                        <!-- Dynamic Items -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 25px; text-transform: uppercase; font-family: var(--heading-font);">Edit Project</h2>
+            <form id="editForm">
+                <input type="hidden" id="editIndex">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="editTitle" required>
+                </div>
+                <div id="editImageFields">
+                    <div class="form-group">
+                        <label>Image Link</label>
+                        <input type="url" id="editImagePath">
+                    </div>
+                </div>
+                <div id="editVideoFields" style="display:none;">
+                    <div class="form-group">
+                        <label>Platform</label>
+                        <select id="editVideoType">
+                            <option value="vimeo">Vimeo</option>
+                            <option value="youtube">YouTube</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Video ID</label>
+                        <input type="text" id="editVideoId">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="btn-submit" style="background: var(--muted);" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn-submit">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content" style="text-align: center;">
+            <svg viewBox="0 0 24 24" style="width: 60px; fill: #ff4444; margin-bottom: 20px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+            <h2 style="margin-bottom: 15px; text-transform: uppercase; font-family: var(--heading-font);">Delete Project?</h2>
+            <p id="deletePromptText" style="color: var(--muted); margin-bottom: 30px;">Are you sure you want to remove this item permanently?</p>
+            <input type="hidden" id="deleteIndex">
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn-submit" style="background: var(--muted);" onclick="closeDeleteModal()">Cancel</button>
+                <button type="button" class="btn-submit" style="background: #ff4444;" onclick="confirmDelete()">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+      const STORAGE_KEY = 'pd_custom_works';
+
+      // --- INITIAL DATA (Migrated to localStorage for full control) ---
+      const DEFAULT_VIMEO_IDS = [
+        1187486935, 1187487079, 1187487059, 1187487036, 1187486968, 1187486910,
+        1187486890, 1187486871, 1187486807, 1187486734, 1187486344, 1187485920,
+        1187485968, 1187486021, 1187486286, 1187486242, 1187486074, 1187486573,
+        1187486626, 1187486678
+      ];
+
+      const DEFAULT_POSTERS = [
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0001%20%281%29.jpg", "title": "0001 (1)"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0001%20%281%29.png", "title": "0001 (1)"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0001%20%282%29.jpg", "title": "0001 (2)"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0001%20-%2001.png", "title": "0001 01"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0001-01.jpg", "title": "0001 01"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0001.jpg", "title": "0001"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0002%20%281%29.jpg", "title": "0002 (1)"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0002%20%281%29.png", "title": "0002 (1)"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0002%20-%205.jpg", "title": "0002 5"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0002.jpg", "title": "0002"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0003%20%281%29.jpg", "title": "0003 (1)"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0003%20%282%29.jpg", "title": "0003 (2)"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0003%281%29.jpg", "title": "0003(1)"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0003.jpg", "title": "0003"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0003.png", "title": "0003"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0004%20%281%29%281%29.jpg", "title": "0004 (1)(1)"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0004%20%281%29%282%29.jpg", "title": "0004 (1)(2)"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0004%20%281%29.jpg", "title": "0004 (1)"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0004.jpg", "title": "0004"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0005%20%281%29.jpg", "title": "0005 (1)"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0005%20-%202.jpg", "title": "0005 2"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0005.jpg", "title": "0005"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0006-1.jpg", "title": "0006 1"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0006.jpg", "title": "0006"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0007%281%29.jpg", "title": "0007(1)"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0007.jpg", "title": "0007"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0008%20%281%29.jpg", "title": "0008 (1)"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0008%20-%20001.jpg", "title": "0008 001"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0008%20-%20002.jpg", "title": "0008 002"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0008.jpg", "title": "0008"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0009%20-%20002.jpg", "title": "0009 002"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0009.jpg", "title": "0009"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0010%20%281%29.jpg", "title": "0010 (1)"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0010.jpg", "title": "0010"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0011-1.jpg", "title": "0011 1"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0012.jpg", "title": "0012"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0013.jpg", "title": "0013"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0014.jpg", "title": "0014"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0015.jpg", "title": "0015"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/NEC.png", "title": "Nec"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/YRTS.png", "title": "Yrts"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/coming%20soon.jpg", "title": "Coming Soon"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/hiring.jpg", "title": "Hiring"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/inauguration.jpg", "title": "Inauguration"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/launch%20poster.png", "title": "Launch Poster"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/notice%20english.jpg", "title": "Notice English"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/notice%20malayalam.jpg", "title": "Notice Malayalam"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/obt.png", "title": "Obt"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/placement.png", "title": "Placement"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/poster%202.png", "title": "Poster 2"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/LEAD/0001%20%281%29.jpg", "title": "LEAD - 0001 (1)"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/LEAD/0001.jpg", "title": "LEAD - 0001"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/LEAD/0002.jpg", "title": "LEAD - 0002"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/LEAD/0003%20%281%29.jpg", "title": "LEAD - 0003 (1)"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/LEAD/0003%20%282%29.jpg", "title": "LEAD - 0003 (2)"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/LEAD/0003.jpg", "title": "LEAD - 0003"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/LEAD/0005.jpg", "title": "LEAD - 0005"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/LEAD/0006%20portait.jpg", "title": "LEAD - 0006 Portait"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/LEAD/0007%281%29.jpg", "title": "LEAD - 0007(1)"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/LEAD/0007.jpg", "title": "LEAD - 0007"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/LEAD/ADISH.jpg", "title": "LEAD - Adish"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/LEAD/easter.jpg", "title": "LEAD - Easter"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/LEAD/foreign.jpg", "title": "LEAD - Foreign"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/LEAD/foreign2.jpg", "title": "LEAD - Foreign2"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/LEAD/ilead%20feedback.jpg", "title": "LEAD - Ilead Feedback"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/LEAD/joseph.jpg", "title": "LEAD - Joseph"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/LEAD/kk.jpg", "title": "LEAD - Kk"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/LEAD/salon.jpg", "title": "LEAD - Salon"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/LEAD/sunil%20nair.jpg", "title": "LEAD - Sunil Nair"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/Livart%20academy/0001.png", "title": "Livart academy - 0001"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/Livart%20academy/0002.png", "title": "Livart academy - 0002"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/Livart%20academy/0010.jpg", "title": "Livart academy - 0010"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/Livart%20academy/0011.jpg", "title": "Livart academy - 0011"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/Livart%20academy/0012.jpg", "title": "Livart academy - 0012"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/Livart%20academy/0013.jpg", "title": "Livart academy - 0013"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/Livart%20academy/0014.jpg", "title": "Livart academy - 0014"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/NEC/0001.jpg", "title": "NEC - 0001"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/NEC/0002.jpg", "title": "NEC - 0002"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/NEC/0003.jpg", "title": "NEC - 0003"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/NEC/0006.jpg", "title": "NEC - 0006"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/NEC/0008.jpg", "title": "NEC - 0008"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/NEC/0009.jpg", "title": "NEC - 0009"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/NEC/0010.jpg", "title": "NEC - 0010"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/NEC/0014.jpg", "title": "NEC - 0014"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/NEC/0027.jpg", "title": "NEC - 0027"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/NEC/0028.jpg", "title": "NEC - 0028"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/NEC/00aa.jpg", "title": "NEC - 00Aa"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/NEC/00ab.jpg", "title": "NEC - 00Ab"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/NEC/CERTIFICATE.jpg", "title": "NEC - Certificate"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/NEC/stage.png", "title": "NEC - Stage"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/cusat/0001.jpg", "title": "cusat - 0001"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/cusat/0002.jpg", "title": "cusat - 0002"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/feastale/0001.jpg", "title": "feastale - 0001"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/happiocaUntitled%20folder/hcircle3.png", "title": "happiocaUntitled folder - Hcircle3"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/happiocaUntitled%20folder/hiring.jpg", "title": "happiocaUntitled folder - Hiring"},
+        {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/client%20details/happiocaUntitled%20folder/tree%20poster.jpg", "title": "happiocaUntitled folder - Tree Poster"}
+      ];
+
+      function migrateIfNeeded() {
+        if (!localStorage.getItem('pd_initialized')) {
+          const initialWorks = [];
+          
+          // Add default videos
+          DEFAULT_VIMEO_IDS.forEach(id => {
+            initialWorks.push({ title: `Vimeo Film ${id}`, type: 'video', videoType: 'vimeo', videoId: id });
+          });
+
+          // Add default posters
+          DEFAULT_POSTERS.forEach(poster => {
+            initialWorks.push({ title: poster.title, type: 'image', path: poster.path });
+          });
+
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(initialWorks));
+          localStorage.setItem('pd_initialized', 'true');
+        }
+      }
+
+      migrateIfNeeded();
+
+      let activeType = 'image';
+
+      // Tab Switching
+        function switchTab(type) {
+            activeType = type;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText.toLowerCase().includes(type));
+            });
+            document.getElementById('imageFields').classList.toggle('active', type === 'image');
+            document.getElementById('videoFields').classList.toggle('active', type === 'video');
+        }
+
+        // Theme Logic
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        html.setAttribute('data-theme', currentTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const newTheme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // Data Management
+        let currentListFilter = 'all';
+
+        function setListFilter(filter, btn) {
+            currentListFilter = filter;
+            document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            loadWorks();
+        }
+
+        function loadWorks() {
+            const works = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            const list = document.getElementById('worksList');
+            list.innerHTML = '';
+
+            // Update count in header
+            const countLabel = document.querySelector('.list-header h2 span');
+            if (countLabel) countLabel.innerText = `(${works.length} Total)`;
+
+            const filteredWorks = works
+                .map((w, i) => ({ ...w, originalIndex: i }))
+                .filter(w => currentListFilter === 'all' || w.type === currentListFilter);
+
+            if (filteredWorks.length === 0) {
+                list.innerHTML = `<p style="color: var(--muted); text-align: center; padding: 40px;">No ${currentListFilter === 'all' ? '' : currentListFilter} projects found.</p>`;
+                return;
+            }
+
+            filteredWorks.forEach((work) => {
+                const card = document.createElement('div');
+                card.className = 'work-card';
+                
+                let preview = '';
+                if (work.type === 'image') {
+                    preview = `<img src="${work.path}" onerror="this.src='https://via.placeholder.com/80?text=Error'">`;
+                } else {
+                    const thumb = work.videoType === 'youtube' ? `https://img.youtube.com/vi/${work.videoId}/default.jpg` : '';
+                    preview = thumb ? `<img src="${thumb}">` : '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+                }
+
+                card.innerHTML = `
+                    <div class="preview-box">${preview}</div>
+                    <div class="card-info">
+                        <h3>${work.title}</h3>
+                        <p>${work.type.toUpperCase()} • ${work.type === 'video' ? work.videoType : 'Poster'}</p>
+                    </div>
+                    <div class="card-actions">
+                        <button class="action-btn" onclick="openEditModal(${work.originalIndex})">
+                            <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                        </button>
+                        <button class="action-btn delete" onclick="deleteWork(${work.originalIndex})">
+                            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                        </button>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function deleteWork(idx) {
+            const index = parseInt(idx);
+            const works = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            
+            if (isNaN(index) || index < 0 || index >= works.length) return;
+
+            const itemTitle = works[index].title || 'this project';
+            document.getElementById('deletePromptText').innerText = `Are you sure you want to delete "${itemTitle}"?`;
+            document.getElementById('deleteIndex').value = index;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+        }
+
+        function confirmDelete() {
+            const index = parseInt(document.getElementById('deleteIndex').value);
+            const works = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            
+            try {
+                works.splice(index, 1);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(works));
+                window.dispatchEvent(new Event('storage'));
+                loadWorks();
+                closeDeleteModal();
+            } catch (err) {
+                console.error('Delete error:', err);
+            }
+        }
+
+        // Add
+        document.getElementById('workForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const works = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            const newWork = {
+                title: document.getElementById('title').value,
+                type: activeType
+            };
+
+            if (activeType === 'image') {
+                newWork.path = document.getElementById('imagePath').value;
+            } else {
+                newWork.videoType = document.getElementById('videoType').value;
+                newWork.videoId = document.getElementById('videoId').value;
+            }
+
+            works.unshift(newWork);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(works));
+            
+            // Visual feedback
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerText;
+            submitBtn.innerText = 'Project Added!';
+            submitBtn.style.background = '#44ff44';
+            setTimeout(() => {
+                submitBtn.innerText = originalText;
+                submitBtn.style.background = '';
+            }, 2000);
+
+            e.target.reset();
+            loadWorks();
+        });
+
+        // Edit Modal
+        function openEditModal(index) {
+            const works = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            const work = works[index];
+            
+            document.getElementById('editIndex').value = index;
+            document.getElementById('editTitle').value = work.title;
+            
+            if (work.type === 'image') {
+                document.getElementById('editImageFields').style.display = 'block';
+                document.getElementById('editVideoFields').style.display = 'none';
+                document.getElementById('editImagePath').value = work.path;
+            } else {
+                document.getElementById('editImageFields').style.display = 'none';
+                document.getElementById('editVideoFields').style.display = 'block';
+                document.getElementById('editVideoType').value = work.videoType;
+                document.getElementById('editVideoId').value = work.videoId;
+            }
+            
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        document.getElementById('editForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const index = document.getElementById('editIndex').value;
+            const works = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            const work = works[index];
+
+            work.title = document.getElementById('editTitle').value;
+            if (work.type === 'image') {
+                work.path = document.getElementById('editImagePath').value;
+            } else {
+                work.videoType = document.getElementById('editVideoType').value;
+                work.videoId = document.getElementById('editVideoId').value;
+            }
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(works));
+            closeModal();
+            loadWorks();
+        });
+
+        loadWorks();
+    </script>
+</body>
+</html>
