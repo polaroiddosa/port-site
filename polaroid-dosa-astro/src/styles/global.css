@@ -496,16 +496,11 @@
       transition: transform 0.6s var(--ease);
     }
 
-    /* Lazy-load fade-in for client logos */
+    /* Lazy-load fade-in for client logos (Disabled to support Astro native Image) */
     .client-tile img {
       transition: opacity 0.4s ease;
     }
-    .client-tile img:not(.loaded) {
-      opacity: 0;
-    }
-    .client-tile img.loaded {
-      opacity: 1;
-    }
+
 
     .work-overlay {
       position: absolute; inset: 0;

@@ -1,14 +1,24 @@
 ---
 import { Image } from 'astro:assets';
+
+import logo1 from '../assets/images/clients/logo-kudumbashree.png';
+import logo2 from '../assets/images/clients/Artboard 1blue.png';
+import logo3 from '../assets/images/clients/Group-2.png';
+import logo4 from '../assets/images/clients/Livart beauty academy.png';
+import logo5 from '../assets/images/clients/edex dark.png';
+import logo6 from '../assets/images/clients/final (1).png';
+import logo7 from '../assets/images/clients/logo.png';
+import logo8 from '../assets/images/clients/logo (1).png';
+
 const logos = [
-  { src: '/images/clients/logo-kudumbashree.png', alt: 'Kudumbashree', class: 'large-logo' },
-  { src: '/images/clients/Artboard 1blue.png', alt: 'Client' },
-  { src: '/images/clients/Group-2.png', alt: 'Client' },
-  { src: '/images/clients/Livart beauty academy.png', alt: 'Livart' },
-  { src: '/images/clients/edex dark.png', alt: 'Edex' },
-  { src: '/images/clients/final (1).png', alt: 'Client' },
-  { src: '/images/clients/logo.png', alt: 'Client', class: 'large-logo' },
-  { src: '/images/clients/logo (1).png', alt: 'Client' },
+  { src: logo1, alt: 'Kudumbashree', class: 'large-logo' },
+  { src: logo2, alt: 'Client', class: '' },
+  { src: logo3, alt: 'Client', class: '' },
+  { src: logo4, alt: 'Livart', class: '' },
+  { src: logo5, alt: 'Edex', class: '' },
+  { src: logo6, alt: 'Client', class: '' },
+  { src: logo7, alt: 'Client', class: 'large-logo' },
+  { src: logo8, alt: 'Client', class: '' },
 ];
 ---
 <section id="clients">
@@ -21,7 +31,7 @@ const logos = [
       <div class="clients-grid">
         {logos.map((logo) => (
           <div class="client-tile">
-            <img data-src={logo.src} alt={logo.alt} class={logo.class || ""} loading="lazy" decoding="async" width="160" height="80" />
+            <Image src={logo.src} alt={logo.alt} class={logo.class || ""} loading="lazy" decoding="async" format="webp" />
           </div>
         ))}
       </div>
