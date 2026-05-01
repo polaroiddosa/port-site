@@ -35,23 +35,35 @@
     1187486626, 1187486678
   ];
 
-  async function addVideoItem(id, type, customTitle = null) {
-    try {
-      let data;
-      if (type === 'vimeo') {
-        const res = await fetch(`https://vimeo.com/api/oembed.json?url=https://vimeo.com/${id}&width=800`);
-        data = await res.json();
-      } else {
-        data = { thumbnail_url: `https://img.youtube.com/vi/${id}/maxresdefault.jpg`, title: customTitle || "YouTube Video" };
-      }
-      const item = document.createElement('div');
-      item.className = 'work-item video reveal';
-      item.innerHTML = `<img src="${data.thumbnail_url}" alt="${data.title}" loading="lazy" decoding="async">
-        <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-        <div class="work-overlay"><div class="work-tag">Brand Film</div><div class="work-title">${customTitle || data.title}</div></div>`;
-      item.addEventListener('click', () => openLightbox(id, type));
-      workGrid.appendChild(item);
-    } catch (e) { console.error(e); }
+  function addVideoItem(id, type, customTitle = null) {
+    const item = document.createElement('div');
+    item.className = 'work-item video reveal';
+    
+    // Check if the current filter hides videos
+    const activeBtn = document.querySelector('.filter-btn.active');
+    if (activeBtn && activeBtn.dataset.filter !== 'all' && activeBtn.dataset.filter !== 'video') {
+      item.style.display = 'none';
+    }
+
+    item.innerHTML = `<img src="" alt="Video" loading="lazy" decoding="async">
+      <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      <div class="work-overlay"><div class="work-tag">Brand Film</div><div class="work-title">...</div></div>`;
+    item.addEventListener('click', () => openLightbox(id, type));
+    workGrid.appendChild(item);
+
+    if (type === 'vimeo') {
+      // Use vumbnail for instant reliable thumbnail loading
+      item.querySelector('img').src = `https://vumbnail.com/${id}.jpg`;
+      
+      // Attempt to fetch title via oembed, fallback to generic title on CORS error
+      fetch(`https://vimeo.com/api/oembed.json?url=https://vimeo.com/${id}&width=800`)
+        .then(res => res.json())
+        .then(data => { item.querySelector('.work-title').innerText = customTitle || data.title; })
+        .catch(() => { item.querySelector('.work-title').innerText = customTitle || "Vimeo Video"; });
+    } else {
+      item.querySelector('img').src = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
+      item.querySelector('.work-title').innerText = customTitle || "YouTube Video";
+    }
   }
 
   function addPosterItem(path, title) {
