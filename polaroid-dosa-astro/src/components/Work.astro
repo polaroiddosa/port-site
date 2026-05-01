@@ -50,7 +50,10 @@
       <div class="work-overlay"><div class="work-tag">Brand Film</div><div class="work-title">...</div></div>`;
     
     const img = item.querySelector('img');
-    img.onload = () => img.classList.add('loaded');
+    img.onload = () => {
+      img.classList.add('loaded');
+      item.classList.add('loaded');
+    };
 
     item.addEventListener('click', () => openLightbox(id, type));
     workGrid.appendChild(item);
@@ -77,9 +80,15 @@
         <div class="work-overlay"><div class="work-tag">Creative Work</div><div class="work-title">${title}</div></div>`;
       
       const img = item.querySelector('img');
-      img.onload = () => img.classList.add('loaded');
+      img.onload = () => {
+        img.classList.add('loaded');
+        item.classList.add('loaded');
+      };
       // Force trigger for cached images
-      if (img.complete) img.classList.add('loaded');
+      if (img.complete) {
+        img.classList.add('loaded');
+        item.classList.add('loaded');
+      }
 
       item.addEventListener('click', () => openLightbox(path, 'image'));
       workGrid.appendChild(item);
