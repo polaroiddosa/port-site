@@ -47,7 +47,7 @@
       item.style.display = 'block';
     }
 
-    item.innerHTML = `<img src="" alt="Video" loading="lazy" decoding="async">
+    item.innerHTML = `<img data-src="" alt="Video" loading="lazy" decoding="async">
       <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
       <div class="work-overlay"><div class="work-tag">Brand Film</div><div class="work-title">...</div></div>`;
     
@@ -60,25 +60,39 @@
     item.addEventListener('click', () => openLightbox(id, type));
     workGrid.appendChild(item);
 
-    if (type === 'vimeo') {
-      // Use vumbnail for instant reliable thumbnail loading
-      item.querySelector('img').src = `https://vumbnail.com/${id}.jpg`;
-      
-      // Attempt to fetch title via oembed, fallback to generic title on CORS error
-      fetch(`https://vimeo.com/api/oembed.json?url=https://vimeo.com/${id}&width=800`)
-        .then(res => res.json())
-        .then(data => { item.querySelector('.work-title').innerText = customTitle || data.title; })
-        .catch(() => { item.querySelector('.work-title').innerText = customTitle || "Vimeo Video"; });
+    // Initialize source only when needed via observer
+    const loadVideoSrc = () => {
+        if (type === 'vimeo') {
+            img.src = `https://vumbnail.com/${id}.jpg`;
+            fetch(`https://vimeo.com/api/oembed.json?url=https://vimeo.com/${id}&width=800`)
+                .then(res => res.json())
+                .then(data => { item.querySelector('.work-title').innerText = customTitle || data.title; })
+                .catch(() => { item.querySelector('.work-title').innerText = customTitle || "Vimeo Video"; });
+        } else {
+            img.src = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
+            item.querySelector('.work-title').innerText = customTitle || "YouTube Video";
+        }
+    };
+
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    loadVideoSrc();
+                    observer.unobserve(item);
+                }
+            });
+        }, { rootMargin: '200px' });
+        observer.observe(item);
     } else {
-      item.querySelector('img').src = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
-      item.querySelector('.work-title').innerText = customTitle || "YouTube Video";
+        loadVideoSrc();
     }
   }
 
   function addPosterItem(path, title) {
       const item = document.createElement('div');
       item.className = 'work-item poster reveal';
-      item.innerHTML = `<img src="${path}" alt="${title}" loading="lazy" decoding="async">
+      item.innerHTML = `<img data-src="${path}" alt="${title}" loading="lazy" decoding="async">
         <div class="work-overlay"><div class="work-tag">Creative Work</div><div class="work-title">${title}</div></div>`;
       
       const img = item.querySelector('img');
@@ -86,10 +100,27 @@
         img.classList.add('loaded');
         item.classList.add('loaded');
       };
-      // Force trigger for cached images
-      if (img.complete) {
-        img.classList.add('loaded');
-        item.classList.add('loaded');
+
+      const loadPosterSrc = () => {
+          img.src = path;
+          if (img.complete) {
+            img.classList.add('loaded');
+            item.classList.add('loaded');
+          }
+      };
+
+      if ('IntersectionObserver' in window) {
+          const observer = new IntersectionObserver((entries) => {
+              entries.forEach(entry => {
+                  if (entry.isIntersecting) {
+                      loadPosterSrc();
+                      observer.unobserve(item);
+                  }
+              });
+          }, { rootMargin: '200px' });
+          observer.observe(item);
+      } else {
+          loadPosterSrc();
       }
 
       item.addEventListener('click', () => openLightbox(path, 'image'));
