@@ -603,10 +603,11 @@
 
     .clients-label {
       font-size: 48px; font-weight: 800; letter-spacing: -1px;
-      text-transform: none; color: #111111 !important;
+      text-transform: none; color: var(--text);
       margin-bottom: 20px;
       font-family: var(--heading-font);
     }
+    #clients .clients-label { color: #111111 !important; }
 
     .clients-wrap p { 
       color: rgba(0, 0, 0, 0.7) !important; 
