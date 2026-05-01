@@ -66,6 +66,13 @@
 
     // Initialize source only when needed via observer
     const loadVideoSrc = () => {
+        // Trigger reveal animation
+        setTimeout(() => {
+            item.classList.add('revealed');
+        }, staggerDelay);
+        staggerDelay += STAGGER_INCREMENT;
+        setTimeout(() => { staggerDelay = Math.max(0, staggerDelay - STAGGER_INCREMENT); }, 1000);
+
         if (type === 'vimeo') {
             img.src = `https://vumbnail.com/${id}.jpg`;
             fetch(`https://vimeo.com/api/oembed.json?url=https://vimeo.com/${id}&width=800`)
@@ -86,7 +93,7 @@
                     observer.unobserve(item);
                 }
             });
-        }, { rootMargin: '200px' });
+        }, { rootMargin: '250px' });
         observer.observe(item);
     } else {
         loadVideoSrc();
