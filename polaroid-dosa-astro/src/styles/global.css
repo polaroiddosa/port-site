@@ -493,7 +493,12 @@
       width: 100%;
       height: auto;
       display: block;
-      transition: transform 0.6s var(--ease);
+      opacity: 0;
+      transition: transform 0.6s var(--ease), opacity 0.8s ease;
+    }
+
+    .work-item img.loaded {
+      opacity: 1;
     }
 
     /* Lazy-load fade-in for client logos (Disabled to support Astro native Image) */

@@ -48,6 +48,10 @@
     item.innerHTML = `<img src="" alt="Video" loading="lazy" decoding="async">
       <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
       <div class="work-overlay"><div class="work-tag">Brand Film</div><div class="work-title">...</div></div>`;
+    
+    const img = item.querySelector('img');
+    img.onload = () => img.classList.add('loaded');
+
     item.addEventListener('click', () => openLightbox(id, type));
     workGrid.appendChild(item);
 
@@ -71,6 +75,12 @@
       item.className = 'work-item poster reveal';
       item.innerHTML = `<img src="${path}" alt="${title}" loading="lazy" decoding="async">
         <div class="work-overlay"><div class="work-tag">Creative Work</div><div class="work-title">${title}</div></div>`;
+      
+      const img = item.querySelector('img');
+      img.onload = () => img.classList.add('loaded');
+      // Force trigger for cached images
+      if (img.complete) img.classList.add('loaded');
+
       item.addEventListener('click', () => openLightbox(path, 'image'));
       workGrid.appendChild(item);
   }
