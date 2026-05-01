@@ -28,6 +28,10 @@
   const lightboxContent = document.getElementById('lightboxContent');
   const lightboxClose = document.getElementById('lightboxClose');
 
+  let staggerDelay = 0;
+  const STAGGER_INCREMENT = 150; // ms between each item reveal
+  let lastScrollPos = 0;
+
   const vimeoIds = [
     1187486935, 1187487079, 1187487059, 1187487036, 1187486968, 1187486910,
     1187486890, 1187486871, 1187486807, 1187486734, 1187486344, 1187485920,
@@ -103,10 +107,16 @@
 
       const loadPosterSrc = () => {
           img.src = path;
-          if (img.complete) {
-            img.classList.add('loaded');
-            item.classList.add('loaded');
-          }
+          img.onload = () => {
+              setTimeout(() => {
+                  img.classList.add('loaded');
+                  item.classList.add('loaded');
+              }, staggerDelay);
+              staggerDelay += STAGGER_INCREMENT;
+              // Reset delay after a batch to prevent infinite growth
+              setTimeout(() => { staggerDelay = Math.max(0, staggerDelay - STAGGER_INCREMENT); }, 1000);
+          };
+          if (img.complete) img.onload();
       };
 
       if ('IntersectionObserver' in window) {
@@ -117,7 +127,7 @@
                       observer.unobserve(item);
                   }
               });
-          }, { rootMargin: '200px' });
+          }, { rootMargin: '100px' }); // Smaller margin for tighter control
           observer.observe(item);
       } else {
           loadPosterSrc();
