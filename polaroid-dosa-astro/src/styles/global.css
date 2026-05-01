@@ -582,14 +582,7 @@
       transform: scale(1.05);
     }
 
-    .lightbox-close::before {
-      content: '←';
-      font-size: 18px;
-    }
-    
-    .lightbox-close::after {
-      content: ' BACK';
-    }
+    /* Removed pseudo elements for lightbox close to only show BACK text */
 
     /* -------------------------------------------------------------------------- */
     /* 6. CLIENTS SECTION                                                         */
