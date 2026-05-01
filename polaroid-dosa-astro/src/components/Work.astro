@@ -37,23 +37,17 @@
 
   function addVideoItem(id, type, customTitle = null) {
     const item = document.createElement('div');
-    item.className = 'work-item video reveal';
+    item.className = 'work-item video'; // Removed reveal class if causing issues
     
-    // Check if the current filter hides videos
+    // Use the current filter state to set initial visibility
     const activeBtn = document.querySelector('.filter-btn.active');
-    if (activeBtn && activeBtn.dataset.filter !== 'all' && activeBtn.dataset.filter !== 'video') {
+    if (activeBtn && activeBtn.dataset.filter === 'poster') {
       item.style.display = 'none';
+    } else {
+      item.style.display = 'block';
     }
 
-    item.innerHTML = `<img
-        src=""
-        alt="Video"
-        loading="lazy"
-        decoding="async"
-        width="800"
-        height="600"
-        style="width:100%; height:100%; object-fit:cover; display:block;"
-      >
+    item.innerHTML = `<img src="" alt="Video" loading="lazy" decoding="async">
       <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
       <div class="work-overlay"><div class="work-tag">Brand Film</div><div class="work-title">...</div></div>`;
     
@@ -84,15 +78,7 @@
   function addPosterItem(path, title) {
       const item = document.createElement('div');
       item.className = 'work-item poster reveal';
-      item.innerHTML = `<img
-          src="${path}"
-          alt="${title}"
-          loading="lazy"
-          decoding="async"
-          width="800"
-          height="600"
-          style="width:100%; height:100%; object-fit:cover; display:block;"
-        >
+      item.innerHTML = `<img src="${path}" alt="${title}" loading="lazy" decoding="async">
         <div class="work-overlay"><div class="work-tag">Creative Work</div><div class="work-title">${title}</div></div>`;
       
       const img = item.querySelector('img');
@@ -131,54 +117,56 @@
   window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
 
   const staticPosters = [
-      {"path": "/images/PORTFOLIO Works/0001%20%281%29.jpg", "title": "0001 (1)"},
-      {"path": "/images/PORTFOLIO Works/0001%20%281%29.png", "title": "0001 (1)"},
-      {"path": "/images/PORTFOLIO Works/0001%20%282%29.jpg", "title": "0001 (2)"},
-      {"path": "/images/PORTFOLIO Works/0001%20-%2001.png", "title": "0001 01"},
-      {"path": "/images/PORTFOLIO Works/0001-01.jpg", "title": "0001 01"},
-      {"path": "/images/PORTFOLIO Works/0001.jpg", "title": "0001"},
-      {"path": "/images/PORTFOLIO Works/0002%20%281%29.jpg", "title": "0002 (1)"},
-      {"path": "/images/PORTFOLIO Works/0002%20%281%29.png", "title": "0002 (1)"},
-      {"path": "/images/PORTFOLIO Works/0002%20-%205.jpg", "title": "0002 5"},
-      {"path": "/images/PORTFOLIO Works/0002.jpg", "title": "0002"},
-      {"path": "/images/PORTFOLIO Works/0003%281%29.jpg", "title": "0003(1)"},
-      {"path": "/images/PORTFOLIO Works/0003.jpg", "title": "0003"},
-      {"path": "/images/PORTFOLIO Works/0003.png", "title": "0003"},
-      {"path": "/images/PORTFOLIO Works/0004%20%281%29%281%29.jpg", "title": "0004 (1)(1)"},
-      {"path": "/images/PORTFOLIO Works/0004%20%281%29%282%29.jpg", "title": "0004 (1)(2)"},
-      {"path": "/images/PORTFOLIO Works/0004%20%281%29.jpg", "title": "0004 (1)"},
-      {"path": "/images/PORTFOLIO Works/0004.jpg", "title": "0004"},
-      {"path": "/images/PORTFOLIO Works/0005%20%281%29.jpg", "title": "0005 (1)"},
-      {"path": "/images/PORTFOLIO Works/0005%20-%202.jpg", "title": "0005 2"},
-      {"path": "/images/PORTFOLIO Works/0005.jpg", "title": "0005"},
-      {"path": "/images/PORTFOLIO Works/0006-1.jpg", "title": "0006 1"},
-      {"path": "/images/PORTFOLIO Works/0006.jpg", "title": "0006"},
-      {"path": "/images/PORTFOLIO Works/0007%281%29.jpg", "title": "0007(1)"},
-      {"path": "/images/PORTFOLIO Works/0007.jpg", "title": "0007"},
-      {"path": "/images/PORTFOLIO Works/0008%20%281%29.jpg", "title": "0008 (1)"},
-      {"path": "/images/PORTFOLIO Works/0008%20-%20001.jpg", "title": "0008 001"},
-      {"path": "/images/PORTFOLIO Works/0008%20-%20002.jpg", "title": "0008 002"},
-      {"path": "/images/PORTFOLIO Works/0008.jpg", "title": "0008"},
-      {"path": "/images/PORTFOLIO Works/0009%20-%20002.jpg", "title": "0009 002"},
-      {"path": "/images/PORTFOLIO Works/0009.jpg", "title": "0009"},
-      {"path": "/images/PORTFOLIO Works/0010%20%281%29.jpg", "title": "0010 (1)"},
-      {"path": "/images/PORTFOLIO Works/0010.jpg", "title": "0010"},
-      {"path": "/images/PORTFOLIO Works/0011-1.jpg", "title": "0011 1"},
-      {"path": "/images/PORTFOLIO Works/0012.jpg", "title": "0012"},
-      {"path": "/images/PORTFOLIO Works/0013.jpg", "title": "0013"},
-      {"path": "/images/PORTFOLIO Works/0014.jpg", "title": "0014"},
-      {"path": "/images/PORTFOLIO Works/0015.jpg", "title": "0015"},
-      {"path": "/images/PORTFOLIO Works/NEC.png", "title": "Nec"},
-      {"path": "/images/PORTFOLIO Works/YRTS.png", "title": "Yrts"},
-      {"path": "/images/PORTFOLIO Works/coming%20soon.jpg", "title": "Coming Soon"},
-      {"path": "/images/PORTFOLIO Works/hiring.jpg", "title": "Hiring"},
-      {"path": "/images/PORTFOLIO Works/inauguration.jpg", "title": "Inauguration"},
-      {"path": "/images/PORTFOLIO Works/launch%20poster.png", "title": "Launch Poster"},
-      {"path": "/images/PORTFOLIO Works/notice%20english.jpg", "title": "Notice English"},
-      {"path": "/images/PORTFOLIO Works/notice%20malayalam.jpg", "title": "Notice Malayalam"},
-      {"path": "/images/PORTFOLIO Works/obt.png", "title": "Obt"},
-      {"path": "/images/PORTFOLIO Works/placement.png", "title": "Placement"},
-      {"path": "/images/PORTFOLIO Works/poster%202.png", "title": "Poster 2"}
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0001%20%281%29.jpg", "title": "0001 (1)"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0001%20%281%29.png", "title": "0001 (1)"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0001%20%282%29.jpg", "title": "0001 (2)"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0001%20-%2001.png", "title": "0001 01"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0001-01.jpg", "title": "0001 01"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0001.jpg", "title": "0001"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0002%20%281%29.jpg", "title": "0002 (1)"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0002%20%281%29.png", "title": "0002 (1)"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0002%20-%205.jpg", "title": "0002 5"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0002.jpg", "title": "0002"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0003%20%281%29.jpg", "title": "0003 (1)"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0003%20%282%29.jpg", "title": "0003 (2)"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0003%281%29.jpg", "title": "0003(1)"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0003.jpg", "title": "0003"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0003.png", "title": "0003"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0004%20%281%29%281%29.jpg", "title": "0004 (1)(1)"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0004%20%281%29%282%29.jpg", "title": "0004 (1)(2)"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0004%20%281%29.jpg", "title": "0004 (1)"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0004.jpg", "title": "0004"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0005%20%281%29.jpg", "title": "0005 (1)"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0005%20-%202.jpg", "title": "0005 2"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0005.jpg", "title": "0005"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0006-1.jpg", "title": "0006 1"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0006.jpg", "title": "0006"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0007%281%29.jpg", "title": "0007(1)"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0007.jpg", "title": "0007"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0008%20%281%29.jpg", "title": "0008 (1)"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0008%20-%20001.jpg", "title": "0008 001"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0008%20-%20002.jpg", "title": "0008 002"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0008.jpg", "title": "0008"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0009%20-%20002.jpg", "title": "0009 002"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0009.jpg", "title": "0009"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0010%20%281%29.jpg", "title": "0010 (1)"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0010.jpg", "title": "0010"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0011-1.jpg", "title": "0011 1"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0012.jpg", "title": "0012"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0013.jpg", "title": "0013"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0014.jpg", "title": "0014"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/0015.jpg", "title": "0015"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/NEC.png", "title": "Nec"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/YRTS.png", "title": "Yrts"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/coming%20soon.jpg", "title": "Coming Soon"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/hiring.jpg", "title": "Hiring"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/inauguration.jpg", "title": "Inauguration"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/launch%20poster.png", "title": "Launch Poster"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/notice%20english.jpg", "title": "Notice English"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/notice%20malayalam.jpg", "title": "Notice Malayalam"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/obt.png", "title": "Obt"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/placement.png", "title": "Placement"},
+      {"path": "https://raw.githubusercontent.com/polaroiddosa/portfolio/main/PORTFOLIO%20Works/poster%202.png", "title": "Poster 2"}
     ];
 
   async function loadAll() {
@@ -200,45 +188,19 @@
 
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const activeBtn = document.querySelector('.filter-btn.active');
-      if (activeBtn) activeBtn.classList.remove('active');
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       const filter = btn.dataset.filter;
+      
       document.querySelectorAll('.work-item').forEach(item => {
-        item.style.display = (filter === 'all' || item.classList.contains(filter)) ? 'block' : 'none';
+        if (filter === 'all' || item.classList.contains(filter)) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
       });
     });
   });
 
   loadAll();
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const workImages = document.querySelectorAll('.work-item img');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const img = entry.target;
-        if (img.complete) {
-          img.classList.add('loaded');
-          img.closest('.work-item').classList.add('loaded');
-        } else {
-          img.addEventListener('load', () => {
-            img.classList.add('loaded');
-            img.closest('.work-item').classList.add('loaded');
-          });
-          img.addEventListener('error', () => {
-            console.error('Image failed:', img.src);
-            img.closest('.work-item').style.background = '#111';
-            img.style.display = 'none';
-          });
-        }
-        observer.unobserve(img);
-      }
-    });
-  }, {
-    rootMargin: '500px',
-    threshold: 0
-  });
-  workImages.forEach(img => observer.observe(img));
-});
 </script>
