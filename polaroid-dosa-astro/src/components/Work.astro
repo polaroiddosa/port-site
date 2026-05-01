@@ -106,15 +106,19 @@
       };
 
       const loadPosterSrc = () => {
+          // 1. Immediately trigger the reveal animation for the slot
+          setTimeout(() => {
+              item.classList.add('revealed');
+          }, staggerDelay);
+          
+          staggerDelay += STAGGER_INCREMENT;
+          setTimeout(() => { staggerDelay = Math.max(0, staggerDelay - STAGGER_INCREMENT); }, 1000);
+
+          // 2. Start loading the image data in parallel
           img.src = path;
           img.onload = () => {
-              setTimeout(() => {
-                  img.classList.add('loaded');
-                  item.classList.add('loaded');
-              }, staggerDelay);
-              staggerDelay += STAGGER_INCREMENT;
-              // Reset delay after a batch to prevent infinite growth
-              setTimeout(() => { staggerDelay = Math.max(0, staggerDelay - STAGGER_INCREMENT); }, 1000);
+              img.classList.add('loaded');
+              item.classList.add('loaded');
           };
           if (img.complete) img.onload();
       };
@@ -127,7 +131,7 @@
                       observer.unobserve(item);
                   }
               });
-          }, { rootMargin: '100px' }); // Smaller margin for tighter control
+          }, { rootMargin: '250px' }); // Increased margin to start download earlier
           observer.observe(item);
       } else {
           loadPosterSrc();
